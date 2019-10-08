@@ -126,6 +126,10 @@ function getFactory(directoryPath, configuration) {
   }
 
   factory.write = function(data, callback) {
+    if (!stream) {
+      terminal = false;
+      if (!findingPath) createNewStream();
+    }
     if (!terminal) {
       write(data, callback, true);
     } else if (typeof callback === 'function') {
@@ -135,7 +139,10 @@ function getFactory(directoryPath, configuration) {
 
   factory.end = function(data, callback) {
     factory.write(data, callback);
-    if (stream) stream.end();
+    if (stream) {
+      stream.end();
+      stream = undefined;
+    }
     terminal = true;
   };
 
